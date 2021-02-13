@@ -5,12 +5,14 @@ import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 const path = require('path');
-const { execFile } = require('child_process');
+const { spawn } = require('child_process');
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
 ])
+
+var pythonProcesses = [];
 
 async function createWindow() {
   // Create the browser window.
@@ -20,7 +22,8 @@ async function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
+      enableRemoteModule: true
     }
   })
 
@@ -33,25 +36,23 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
-  try {
-    const child = execFile(path.join(__dirname+'/../dist/app'), (error, stdout) => {
-      if (error) {
-        console.log(error);
-      }
-      console.log(stdout);
-    });
-  } catch (error) {
-    console.log(error)
+  let pythonAppPath = '/../../dist/app';
+  if (isDevelopment && !process.env.IS_TEST) {
+    pythonAppPath = '/../dist/app';
   }
+  let pythonProcess = spawn(path.join(app.getAppPath() + pythonAppPath));
+  pythonProcesses.push(pythonProcess);
 }
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  // if (process.platform !== 'darwin') {
+  //   app.quit()
+  // }
+  process.kill(pythonProcesses[0].pid);
+  app.quit()
 })
 
 app.on('activate', () => {

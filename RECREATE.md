@@ -32,4 +32,26 @@ Fix the icons and procedure
 
 Building:
 
-https://www.electron.build/ documentation
+```
+yarn electron:build
+```
+
+The app worked using electron serve but not using electron build and running it as a mac app.
+I changed something in vue.config.js
+
+Add the logger
+```
+yarn add electron-log
+```
+
+I have a problem of cors. 
+I hardcoded the path of the app to run and the backend is launched.
+When commenting the execFile and using the raw flask app (flask run) evrything works
+But when flask is app/dist it does not.
+
+Usefull tip.
+To access the console.log of the packaged app just run the build in application directory
+
+When deleting the process on close
+https://stackoverflow.com/questions/36031465/electron-kill-child-process-exec
+https://www.ericluwj.com/2015/11/25/nodejs-spawn-vs-execfile.html

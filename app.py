@@ -1,10 +1,13 @@
 import time
 
 from flask import Flask, jsonify, request
+from flask_cors import CORS
+import os
 
 from kubernetes import client, config
 
 app = Flask(__name__)
+CORS(app)
 
 RESOURCE_CLIENT = {
     "pod": "base",
@@ -69,10 +72,11 @@ def api():
     namespace = request.args.get('namespace')
     container = request.args.get('container')
     resp = jsonify(get_resource(resource_type=resource_type, namespace=namespace, name=name, container=container))
-    resp.headers.add('Access-Control-Allow-Origin', '*')
     return resp
 
 
 if __name__ == "__main__":
     # Use create app factory with pyinstaller?
+    old_path = os.getenv("PATH")
+    os.environ["PATH"] = old_path + ":/usr/local/bin"
     app.run()
