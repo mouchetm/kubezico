@@ -3,6 +3,7 @@ import time
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
+import json
 
 from kubernetes import client, config
 
@@ -15,7 +16,7 @@ RESOURCE_CLIENT = {
     "config_map": "base",
     "secret": "base",
     "resource_quota": "base",
-    "ingress": "base",
+    "ingress": "extension",
     "service": "base",
     "node": "base",
     "deployment": "apps",
@@ -31,9 +32,28 @@ OBJECT_TO_CLIENT = {
     "apps": "AppsV1Api"
 }
 
-KUBECONFIG_PATH = "/Users/mmouchet/.kube/config"
+data_file = "./data.json"
 
-def __get_kube_client(object_type="base", kube_config="/Users/mmouchet/.kube/config"):
+def add_kubeconfig(name):
+    with open(data_file, "r") as f:
+        data = json.load(f)
+        kubeconfigs = data["kubeconfigs"].copy()
+        if name and name not in kubeconfigs:
+            kubeconfigs = [name]
+        data["kubeconfigs"] = kubeconfigs
+        data["active_kubeconfig"] = name
+    with open(data_file, "w") as outfile:
+        json.dump(data, outfile)
+
+def retrieve_kubeconfig_data():
+    with open(data_file, "r") as f:
+        data = json.load(f)
+        kubeconfigs = data["kubeconfigs"]
+        active_kubeconfig = data["active_kubeconfig"]
+    return {"kubeconfigs": kubeconfigs, "activeKubeconfig": active_kubeconfig}
+
+
+def __get_kube_client(object_type="base", kube_config=""):
     config.load_kube_config(kube_config)
     api_client = client.ApiClient()
     client_name = OBJECT_TO_CLIENT[object_type]
@@ -42,12 +62,14 @@ def __get_kube_client(object_type="base", kube_config="/Users/mmouchet/.kube/con
     return kube_client
 
 def get_pod_logs(pod_name, pod_namespace, container):
+    KUBECONFIG_PATH = retrieve_kubeconfig_data().get("activeKubeconfig")
     client = __get_kube_client("base", KUBECONFIG_PATH)
     api_response = client.read_namespaced_pod_log(name=pod_name, namespace=pod_namespace, container=container)
     return api_response.split("\n")
 
 
 def get_resource(resource_type=None, namespace=None, name=None, container=None):
+    KUBECONFIG_PATH = retrieve_kubeconfig_data().get("activeKubeconfig")
     if not resource_type:
         return []
     if resource_type == "log":
@@ -73,6 +95,15 @@ def api():
     container = request.args.get('container')
     resp = jsonify(get_resource(resource_type=resource_type, namespace=namespace, name=name, container=container))
     return resp
+
+@app.route('/api/kubeconfig', methods = ['GET', 'POST'])
+def kubeconfigs():
+    if request.method == "POST":
+        add_kubeconfig(request.get_json().get("kubeconfig"))
+    if request.method == "GET":
+        pass
+
+    return retrieve_kubeconfig_data()
 
 
 if __name__ == "__main__":

@@ -15,6 +15,11 @@ module.exports = {
             "from": "./dist/app",
             "to": "./dist/app",
             "filter": ["**/*"]
+          },
+          {
+            "from": "./dist/data.json",
+            "to": "./dist/data.json",
+            "filter": ["**/*"]
           }
         ]
       }

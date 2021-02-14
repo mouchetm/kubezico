@@ -29,3 +29,5 @@ pnpm-debug.log*
 
 #Electron-builder output
 /dist_electron
+data.json
+error.log

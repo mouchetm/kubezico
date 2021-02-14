@@ -1,6 +1,9 @@
 <template>
   <div id="app" data-app>
-    <v-app-bar> <v-toolbar-title>Kubezico</v-toolbar-title></v-app-bar>
+    <v-app-bar> <v-toolbar-title>Kubezico</v-toolbar-title>
+      <v-btn @click="view='Settings'"> Settings
+      </v-btn>
+    </v-app-bar>
     <div v-if="view == 'Home'">
       <v-card class="homecard" :elevation="0">
         <v-toolbar tile>
@@ -41,15 +44,22 @@
       :namespace="namespace"
       @backToList="backToList()"
     ></pod>
+    <settings
+      v-if="view == 'Settings'"
+      @backToList="backToList()"
+    ></settings>
   </div>
 </template>
 
 <script>
 import Pod from "./components/Pod.vue";
+import Settings from "./components/Settings.vue";
+
 export default {
   name: "app",
   components: {
     Pod,
+    Settings
   },
   data: function () {
     return {
