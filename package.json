@@ -15,7 +15,7 @@
     "pack": "electron-builder --dir",
     "dist": "electron-builder"
   },
-  "main": "./src/background.js",
+  "main": "./background.js",
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",

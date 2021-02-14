@@ -55,3 +55,6 @@ To access the console.log of the packaged app just run the build in application 
 When deleting the process on close
 https://stackoverflow.com/questions/36031465/electron-kill-child-process-exec
 https://www.ericluwj.com/2015/11/25/nodejs-spawn-vs-execfile.html
+
+It was difficult to reach the path of the exec python as it keeps saying he runs as top process
+To get rid of this and keep data, I spawn the python process with the path of the data

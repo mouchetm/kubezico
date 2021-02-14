@@ -37,10 +37,12 @@ async function createWindow() {
     win.loadURL('app://./index.html')
   }
   let pythonAppPath = '/../../dist/app';
+  let dataFilePath = '/../../dist/data.json';
   if (isDevelopment && !process.env.IS_TEST) {
     pythonAppPath = '/../dist/app';
+    dataFilePath = '/../dist/data.json';
   }
-  let pythonProcess = spawn(path.join(app.getAppPath() + pythonAppPath));
+  let pythonProcess = spawn(path.join(app.getAppPath() + pythonAppPath), [path.join(app.getAppPath() + dataFilePath )]);
   pythonProcesses.push(pythonProcess);
 }
 
@@ -51,8 +53,12 @@ app.on('window-all-closed', () => {
   // if (process.platform !== 'darwin') {
   //   app.quit()
   // }
-  process.kill(pythonProcesses[0].pid);
+  // I prefer to quit the app as well
   app.quit()
+})
+
+app.on('before-quit', () => {
+  process.kill(pythonProcesses[0].pid);
 })
 
 app.on('activate', () => {

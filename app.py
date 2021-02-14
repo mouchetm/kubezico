@@ -3,12 +3,20 @@ import time
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
+import sys
 import json
 
 from kubernetes import client, config
 
 app = Flask(__name__)
 CORS(app)
+
+if '/app' in sys.argv[0]:
+    data_file = sys.argv[1]
+else:
+    data_file = "./data.json"
+
+# logging.debug(f"Setting data file path to {data_file}")
 
 RESOURCE_CLIENT = {
     "pod": "base",
@@ -20,8 +28,9 @@ RESOURCE_CLIENT = {
     "service": "base",
     "node": "base",
     "deployment": "apps",
-    "job": "batch"
-
+    "job": "batch",
+    "persistent_volume_claim": "base",
+    "persistent_volume": "apps"
 }
 
 OBJECT_TO_CLIENT = {
@@ -31,8 +40,6 @@ OBJECT_TO_CLIENT = {
     "batch": "BatchV1Api",
     "apps": "AppsV1Api"
 }
-
-data_file = "./data.json"
 
 def add_kubeconfig(name):
     with open(data_file, "r") as f:
@@ -89,21 +96,26 @@ def get_resource(resource_type=None, namespace=None, name=None, container=None):
 
 @app.route('/api/')
 def api():
-    resource_type = request.args.get('resource-type')
-    name = request.args.get('name')
-    namespace = request.args.get('namespace')
-    container = request.args.get('container')
-    resp = jsonify(get_resource(resource_type=resource_type, namespace=namespace, name=name, container=container))
-    return resp
+    try:
+        resource_type = request.args.get('resource-type')
+        name = request.args.get('name')
+        namespace = request.args.get('namespace')
+        container = request.args.get('container')
+        resp = jsonify(get_resource(resource_type=resource_type, namespace=namespace, name=name, container=container))
+        return resp
+    except Exception as e:
+        return jsonify(str(e)), 500
 
 @app.route('/api/kubeconfig', methods = ['GET', 'POST'])
 def kubeconfigs():
-    if request.method == "POST":
-        add_kubeconfig(request.get_json().get("kubeconfig"))
-    if request.method == "GET":
-        pass
-
-    return retrieve_kubeconfig_data()
+    try:
+        if request.method == "POST":
+            add_kubeconfig(request.get_json().get("kubeconfig"))
+        if request.method == "GET":
+            pass
+        return retrieve_kubeconfig_data()
+    except Exception as e:
+        return jsonify(str(e)), 500
 
 
 if __name__ == "__main__":

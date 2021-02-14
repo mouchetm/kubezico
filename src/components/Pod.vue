@@ -3,10 +3,8 @@
     <v-card class="resource-list" outlined>
       <v-toolbar tile>
         <v-toolbar-title>List of {{ resourceType }}</v-toolbar-title>
-        <v-toolbar-title
-          ><v-btn @click="backToList()"> Back to list </v-btn></v-toolbar-title
-        >
-        <v-toolbar-title
+        <v-spacer></v-spacer>
+        <v-toolbar-title class="refresh-btn"
           ><v-btn @click="refresh()"> Refresh </v-btn></v-toolbar-title
         >
       </v-toolbar>
@@ -53,8 +51,11 @@
             >{{ item.metadata.name }} in
             {{ item.metadata.namespace }}</v-toolbar-title
           >
+          <v-spacer></v-spacer>
           <v-toolbar-title
-            ><v-btn @click="closeDialog()">Close</v-btn></v-toolbar-title
+            ><v-btn class="modal-close-btn" @click="closeDialog()"
+              >Close</v-btn
+            ></v-toolbar-title
           >
         </v-toolbar>
         <v-card-text>
@@ -73,7 +74,8 @@
       <v-card>
         <v-card-title>
           Logs for pod {{ item.metadata.name }} in {{ item.metadata.namespace }}
-          <v-btn @click="closeLogDialog()">Close</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="modal-close-btn" @click="closeLogDialog()">Close</v-btn>
         </v-card-title>
         <v-card-text>
           <v-virtual-scroll :items="logs" height="600" item-height="64">
@@ -149,12 +151,19 @@ export default {
           { text: "message", value: "message" },
           { text: "Details", value: "actions", sortable: false },
         ],
+        persistent_volume_claim: [
+          { text: "Namespace", value: "metadata.namespace" },
+          { text: "Name", value: "metadata.name" },
+          { text: "last_timestamp", value: "last_timestamp" },
+          { text: "volume_name", value: "spec.volume_name" },
+          { text: "Details", value: "actions", sortable: false },
+        ],
         default: [
           { text: "Namespace", value: "metadata.namespace" },
           { text: "Name", value: "metadata.name" },
           { text: "creation_timestamp", value: "metadata.creation_timestamp" },
           { text: "Details", value: "actions", sortable: false },
-        ]
+        ],
       },
       headers: [],
       search: "",
@@ -204,7 +213,7 @@ export default {
         .get("http://127.0.0.1:5000/api/", {
           params: {
             "resource-type": this.resourceType,
-            "namespace": this.namespace,
+            namespace: this.namespace,
           },
         })
         .then((response) => (this.pods = response.data))
@@ -213,13 +222,16 @@ export default {
     },
   },
   mounted() {
-    if (this.resourceType !== "pod" && this.resourceType !== "event"){
+    if (
+      this.resourceType !== "pod" &&
+      this.resourceType !== "event" &&
+      this.resourceType !== "persistent_volume_claim"
+    ) {
       this.headers = this.allHeaders["default"];
-    }
-    else {
+    } else {
       this.headers = this.allHeaders[this.resourceType];
     }
-    
+
     this.refresh();
   },
 };
@@ -235,6 +247,12 @@ export default {
   text-transform: uppercase;
 }
 a:hover {
-  text-decoration: underline;
+  cursor: pointer;
+}
+.refresh-btn {
+  margin-right: 8px;
+}
+.modal-close-btn {
+  margin-right: 8px;
 }
 </style>

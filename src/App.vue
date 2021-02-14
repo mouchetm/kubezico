@@ -1,8 +1,11 @@
 <template>
   <div id="app" data-app>
-    <v-app-bar> <v-toolbar-title>Kubezico</v-toolbar-title>
-      <v-btn @click="view='Settings'"> Settings
-      </v-btn>
+    <v-app-bar>
+      <v-toolbar-title class="home-logo" @click="view = 'Home'"
+        >Kubezico</v-toolbar-title
+      >
+      <v-spacer></v-spacer>
+      <v-btn class="settings-btn" @click="view = 'Settings'"> Settings </v-btn>
     </v-app-bar>
     <div v-if="view == 'Home'">
       <v-card class="homecard" :elevation="0">
@@ -23,9 +26,15 @@
           :key="category.name"
           class="category-card"
         >
-          <div class="category-title"> <strong>{{ category.name }}</strong></div>
+          <div class="category-title">
+            <strong>{{ category.name }}</strong>
+          </div>
           <div class="category">
-            <v-card class="resource" v-for="resource in category.items" :key="resource.name">
+            <v-card
+              class="resource"
+              v-for="resource in category.items"
+              :key="resource.name"
+            >
               <v-card-title>{{ resource.name }}</v-card-title>
               <v-card-text>{{ resource.description }}</v-card-text>
               <v-card-actions>
@@ -44,10 +53,7 @@
       :namespace="namespace"
       @backToList="backToList()"
     ></pod>
-    <settings
-      v-if="view == 'Settings'"
-      @backToList="backToList()"
-    ></settings>
+    <settings v-if="view == 'Settings'" @backToList="backToList()"></settings>
   </div>
 </template>
 
@@ -59,7 +65,7 @@ export default {
   name: "app",
   components: {
     Pod,
-    Settings
+    Settings,
   },
   data: function () {
     return {
@@ -88,7 +94,17 @@ export default {
           name: "network",
           items: [
             { name: "ingress", description: "ingress" },
-            { name: "service", description: "service" }
+            { name: "service", description: "service" },
+          ],
+        },
+        {
+          name: "storage",
+          items: [
+            {
+              name: "persistent_volume_claim",
+              description: "persistent_volume_claim",
+            },
+            { name: "persistent_volume", description: "persistent_volume" },
           ],
         },
       ],
@@ -110,6 +126,9 @@ export default {
 body,
 html {
   @apply bg-white;
+}
+.home-logo {
+  cursor: pointer;
 }
 .namespace-selector {
   margin: 32px;
@@ -134,5 +153,9 @@ html {
 }
 .resource {
   margin: 8px;
+}
+
+.settings-btn {
+  margin-right: 8px;
 }
 </style>

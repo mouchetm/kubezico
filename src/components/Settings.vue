@@ -1,26 +1,30 @@
 <template>
   <div class="settings">
-      
-    <v-btn @click="backToList()"> Back to list </v-btn>
 
-    <div>
-        This is the list of your kubeconfigs:
-    <v-btn @click="addKubeconfigDialog = true"> Add a kubeconfig </v-btn>
+    <v-card class="kubeconfig-manager">
+      <v-card-title>Kubeconfig path</v-card-title>
 
-        <ul id="example-1">
-  <li v-for="kubeconfig in kubeconfigs" :key="kubeconfig">
-    {{getKubeconfigText(kubeconfig)}}
-  </li>
-</ul>
-    </div>
-    <v-dialog v-model="addKubeconfigDialog" v-if="addKubeconfigDialog" width="600">
+      <ul id="kubeconfig-list">
+        <li v-for="kubeconfig in kubeconfigs" :key="kubeconfig">
+          {{ getKubeconfigText(kubeconfig) }}
+        </li>
+      </ul>
+      <v-card-actions>
+        <v-btn @click="addKubeconfigDialog = true">
+          Update kubeconfig path
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-dialog
+      v-model="addKubeconfigDialog"
+      v-if="addKubeconfigDialog"
+      width="600"
+    >
       <v-card>
-        <v-card-title> Please select the container </v-card-title>
+        <v-card-title> Please select the path </v-card-title>
         <v-card-text>
-            <v-text-field v-model="kubeconfigToAdd">
-            </v-text-field>
-            <v-btn @click="addKubeconfig()"> Add a kubeconfig </v-btn>
-
+          <v-text-field v-model="kubeconfigToAdd"> </v-text-field>
+          <v-btn @click="addKubeconfig()"> Update kubeconfig path </v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -68,7 +72,7 @@ export default {
       }
     },
     addKubeconfig() {
-        this.addKubeconfigDialog = false;
+      this.addKubeconfigDialog = false;
       axios
         .post("http://127.0.0.1:5000/api/kubeconfig", {
           kubeconfig: this.kubeconfigToAdd,
@@ -80,7 +84,7 @@ export default {
           )
         )
         .catch((error) => console.log(error))
-        .finally(() => (this.fetchKubeconfigs(), this.loading = false));
+        .finally(() => (this.fetchKubeconfigs(), (this.loading = false)));
     },
   },
   mounted() {
@@ -91,4 +95,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.kubeconfig-manager {
+    padding: 32px;
+    margin: 16px;
+}
 </style>
