@@ -23,7 +23,9 @@ If you need more information for a given resource you can display the yaml (in j
 
 ![logs](./pictures/logs.png)
 
-You can download it from github (in the releases tab).
+You can download it from github (in the releases tab) : https://github.com/mouchetm/kubezico/releases
+
+As I am not an apple certified developer you will have to do this to be able to launch the app : https://support.apple.com/en-gb/guide/mac-help/mh40616/mac
 
 ## Running locally
 
