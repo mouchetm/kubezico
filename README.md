@@ -1,8 +1,29 @@
 # kubezico
 
 Kubezico is a simple application that let you see in realtime what is going on
-inside your kubernetes cluster. You can use it directly with the executable or
-run it locally.
+inside your kubernetes cluster. You can use it directly with the executable or run it locally.
+
+## Features
+
+Kubezico is a very simple yet powerful kubernetes IDE. You can instantly see what resources are present in your cluster an filter by namespace if necessary:
+
+![home](./pictures/home.png)
+
+At the moment you have access to:
+* Pods, deployments and jobs
+* Resource quotas, configmaps and secrets
+* Ingress and services
+* PVC and PV
+
+Then you can select the resource type you want to see in more details and kubezico will automatically list all resources of this type in your cluster.
+
+![resource list](./pictures/pod-list.png)
+
+If you need more information for a given resource you can display the yaml (in json format) corresponding to this resource and even show logs (if your resource is a pod)
+
+![logs](./pictures/logs.png)
+
+You can download it from github (in the releases tab).
 
 ## Running locally
 
