@@ -31,3 +31,5 @@ pnpm-debug.log*
 /dist_electron
 data.json
 error.log
+
+RECREATE.md

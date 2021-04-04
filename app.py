@@ -16,8 +16,6 @@ if '/app' in sys.argv[0]:
 else:
     data_file = "./data.json"
 
-# logging.debug(f"Setting data file path to {data_file}")
-
 RESOURCE_CLIENT = {
     "pod": "base",
     "event": "base",
